@@ -8,17 +8,19 @@ function getWeekendDays(locale = undefined) {
     case "en-US":
     case "en-AU":
     case "en-CA":
-      return [0, 6];
     case "en-GB":
-      return [5, 6];
+      return [0, 6]; // sun, sat
     case "en-IN":
-      return [0];
-    default: /* fri, sat */
-      return [5, 6];
+      return [0]; // sun
+    default:
+      return [5, 6]; // fri, sat
   }
 }
 
 function showCalendar(year, orientation) {
+  // make sure year is a number (or 0 if not given/invalid)
+  year = parseInt(year) || 0;
+
   // if no year is given, use the current year
   if(!year) year = new Date().getFullYear();
 
@@ -44,6 +46,9 @@ function showCalendarPortrait(year) {
 
   // Create a new table element
   const table = document.createElement("table");
+
+  // append caption
+  appendCaption(table, year, "portrait");
 
   // Create the header row
   const headerRow = document.createElement("tr");
@@ -104,13 +109,6 @@ function showCalendarPortrait(year) {
   // Append the table to the #calendar element
   document.getElementById("calendar").appendChild(table);
 
-  // Append the year to the #calendar element in a div element with class .year
-  const yearDiv = document.createElement("div");
-  const yearText = document.createTextNode(year);
-  yearDiv.appendChild(yearText);
-  yearDiv.classList.add("year");
-  document.getElementById("calendar").appendChild(yearDiv);
-
   // Set page title to the year
   document.title = `${year} Year Planner`
 }
@@ -129,8 +127,8 @@ function showCalendarLandscape(year) {
   // Create a new table element
   const table = document.createElement("table");
 
-  // add year as table caption
-  appendElement(table, "caption", year).classList.add("year");
+  // caption
+  appendCaption(table, year, "landscape");
 
   // week day of first day of the year
   const firstWeekDay = new Date(year, 0, 1).getDay();
@@ -189,25 +187,31 @@ function showCalendarLandscape(year) {
   });
 
   // find max number of cells in a month row
-  let maxCells = 31;
+  let maxCells = 31; let maxCellWeekDay = 0;
   const monthRows = table.getElementsByTagName("tr");
   for(let i = 0; i < monthRows.length; i++) {
-    maxCells = Math.max(maxCells, monthRows[i].getElementsByTagName("td").length);
+    if(maxCells < monthRows[i].getElementsByTagName("td").length) {
+      maxCells = monthRows[i].getElementsByTagName("td").length;
+      // week day num of last day of month i
+      maxCellWeekDay = new Date(year, i + 1, 0).getDay();
+    }
   }
 
   // add empty cells to month rows with less than max number of cells
   for(let i = 0; i < monthRows.length; i++) {
     const cells = monthRows[i].getElementsByTagName("td");
-    for(let j = cells.length; j < maxCells; j++) {
-      const emptyCell = appendElement(monthRows[i], "td", "");
+    let lastWeekDay = new Date(year, i + 1, 0).getDay();
 
+    for(let j = cells.length; j < maxCells; j++) {
+      lastWeekDay++;
+      const emptyCell = appendElement(monthRows[i], "td", lastWeekDay);
+      
       // if the current day is a weekend (based on user locale), add the weekend class
-      if(weekendDays.includes(j % 7)) {
+      if(weekendDays.includes(lastWeekDay)) {
         emptyCell.classList.add("weekend");
       }
     }
   }
-
 
   // Append the table to the #calendar element
   document.getElementById("calendar").appendChild(table);
@@ -223,4 +227,27 @@ function appendElement(parent, tagName, text) {
   parent.appendChild(element);
 
   return element;
+}
+
+function appendCaption(table, year, orientation) {
+  const caption = document.createElement("caption");
+  const prevYearLink = document.createElement("a");
+  prevYearLink.href = `?year=${year - 1}&orientation=${orientation}`;
+  prevYearLink.appendChild(document.createTextNode("⏪"));
+  caption.appendChild(prevYearLink);
+  caption.appendChild(document.createTextNode(" "));
+  caption.appendChild(document.createTextNode(year));
+  caption.appendChild(document.createTextNode(" "));
+  const nextYearLink = document.createElement("a");
+  nextYearLink.href = `?year=${year + 1}&orientation=${orientation}`;
+  nextYearLink.appendChild(document.createTextNode("⏩"));
+  caption.appendChild(nextYearLink);
+  caption.appendChild(document.createTextNode(" "));
+  const orientationLink = document.createElement("a");
+  orientationLink.href = `?year=${year}&orientation=${orientation === "portrait" ? "landscape" : "portrait"}`;
+  orientationLink.appendChild(document.createTextNode(orientation === "portrait" ? "🔁" : "🔃"));
+  orientationLink.title = orientation === "portrait" ? "Switch to landscape orientation" : "Switch to portrait orientation";
+  caption.appendChild(orientationLink);
+  caption.classList.add("year");
+  table.appendChild(caption);
 }
