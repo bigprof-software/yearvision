@@ -130,8 +130,11 @@ function showCalendarLandscape(year) {
   // caption
   appendCaption(table, year, "landscape");
 
-  // week day of first day of the year
-  const firstWeekDay = new Date(year, 0, 1).getDay();
+  // week day of first day of the year as 2 letters (e.g. "MO")
+  const firstWeekDayOfYear = weekDayOfDate(year, 1, 1);
+  const cellWeekDay = [];
+  for(let i = 0; i < 7; i++)
+    cellWeekDay.push(weekDayOfDate(year, 1, i + 1));
 
   // Loop through each month, creating a new row for each
   months.forEach((month) => {
@@ -146,15 +149,18 @@ function showCalendarLandscape(year) {
     const numDays = new Date(year, monthIndex + 1, 0).getDate();
 
     // first week day of the month
-    const firstDayWeekDay = new Date(year, monthIndex, 1).getDay();
-
+    const firstWeekDayOfMonth = weekDayOfDate(year, monthIndex + 1, 1);
+    
     // Create empty cells for the days before the first day of the month
-    for (let day = firstWeekDay; day < firstDayWeekDay; day++) {
+    for(let i = 0; i < cellWeekDay.indexOf(firstWeekDayOfMonth); i++) {
       const emptyCell = appendElement(monthRow, "td", "");
-
-      // if the current day is a weekend (based on user locale), add the weekend class
-      if(weekendDays.includes(day)) {
-        emptyCell.classList.add("weekend");
+      
+      // if monthIndex > 0, add .weekend class to empty cell if corresponding cell in row 0 is weekend
+      if(monthIndex > 0) {
+        const correspondingCell = table.getElementsByTagName("tr")[0].getElementsByTagName("td")[i];
+        if(correspondingCell.classList.contains("weekend")) {
+          emptyCell.classList.add("weekend");
+        }
       }
     }
 
@@ -204,7 +210,7 @@ function showCalendarLandscape(year) {
 
     for(let j = cells.length; j < maxCells; j++) {
       lastWeekDay++;
-      const emptyCell = appendElement(monthRows[i], "td", lastWeekDay);
+      const emptyCell = appendElement(monthRows[i], "td", "");
       
       // if the current day is a weekend (based on user locale), add the weekend class
       if(weekendDays.includes(lastWeekDay)) {
@@ -250,4 +256,9 @@ function appendCaption(table, year, orientation) {
   caption.appendChild(orientationLink);
   caption.classList.add("year");
   table.appendChild(caption);
+}
+
+function weekDayOfDate(year, month, day) {
+  const monthIndex = month - 1;
+  return new Date(year, monthIndex, day).toLocaleString("en-US", { weekday: "short" }).toUpperCase().slice(0, 2);
 }
