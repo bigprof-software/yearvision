@@ -179,9 +179,11 @@ function showCalendarLandscape(year) {
       // Create a new empty line element for the event list
       appendElement(dayCell, "div", "").classList.add("event-list");
 
-      // if the current day is a weekend (based on user locale), add the weekend class
+      // if the current day is a weekend (based on user locale), add the weekend class, else add the week day class
       if(weekendDays.includes(new Date(year, monthIndex, day).getDay())) {
-        dayCell.classList.add("weekend");
+        dayCell.classList.add(`day-${weekDayText.toLowerCase()}`, "weekend");
+      } else {
+        dayCell.classList.add(`day-${weekDayText.toLowerCase()}`, "weekday");
       }
 
       // Append the day cell to the month row

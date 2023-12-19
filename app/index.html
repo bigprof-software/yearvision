@@ -44,8 +44,14 @@
 				display: none;
 			}
 		}
-		#calendar .weekend {
+		#calendar td.weekend {
 			background-color: #eee;
+		}
+		#calendar td.weekday {
+			background-color: #fff;
+		}
+		#calendar td:not(.weekend):not(.weekday) {
+			background-color: #f9f9f9;
 		}
 		#calendar .day-number {
 			font-size: 1.2em;
