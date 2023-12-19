@@ -213,7 +213,7 @@ function showCalendarLandscape(year) {
       const emptyCell = appendElement(monthRows[i], "td", "");
       
       // if the current day is a weekend (based on user locale), add the weekend class
-      if(weekendDays.includes(lastWeekDay)) {
+      if(weekendDays.includes(lastWeekDay % 7)) {
         emptyCell.classList.add("weekend");
       }
     }
