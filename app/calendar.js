@@ -188,6 +188,27 @@ function showCalendarLandscape(year) {
     table.appendChild(monthRow);
   });
 
+  // find max number of cells in a month row
+  let maxCells = 31;
+  const monthRows = table.getElementsByTagName("tr");
+  for(let i = 0; i < monthRows.length; i++) {
+    maxCells = Math.max(maxCells, monthRows[i].getElementsByTagName("td").length);
+  }
+
+  // add empty cells to month rows with less than max number of cells
+  for(let i = 0; i < monthRows.length; i++) {
+    const cells = monthRows[i].getElementsByTagName("td");
+    for(let j = cells.length; j < maxCells; j++) {
+      const emptyCell = appendElement(monthRows[i], "td", "");
+
+      // if the current day is a weekend (based on user locale), add the weekend class
+      if(weekendDays.includes(j % 7)) {
+        emptyCell.classList.add("weekend");
+      }
+    }
+  }
+
+
   // Append the table to the #calendar element
   document.getElementById("calendar").appendChild(table);
 
