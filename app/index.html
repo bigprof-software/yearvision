@@ -47,19 +47,23 @@
 <body>
 	<div id="calendar"></div>
 	<script>
-		// get current year
-		let year = new Date().getFullYear();
+		let year = null;
+		let orientation = null;
 
-		// if year provided in url, use that instead
+		// if year provided in url, use that
 		if (window.location.search) {
 			let urlParams = new URLSearchParams(window.location.search);
-			if (urlParams.has('year')) {
-				year = urlParams.get('year');
-			}
+			if (urlParams.has('year')) year = urlParams.get('year');
+		}
+
+		// if orientation provided in url, use that
+		if (window.location.search) {
+			let urlParams = new URLSearchParams(window.location.search);
+			if (urlParams.has('orientation')) orientation = urlParams.get('orientation');
 		}
 
 		// create calendar
-		showCalendar(year);
+		showCalendar(year, orientation);
 	</script>
 </body>
 </html>
