@@ -237,23 +237,37 @@ function appendElement(parent, tagName, text) {
 
 function appendCaption(table, year, orientation) {
   const caption = document.createElement("caption");
+
+  // add link to current year as 'home' link if not already on current year
+  const currentYear = new Date().getFullYear();
+  if(year !== currentYear) {
+    const homeLink = document.createElement("a");
+    homeLink.href = `?year=${currentYear}&orientation=${orientation}`;
+    homeLink.title = "Go to current year";
+    homeLink.appendChild(document.createTextNode("📅"));
+    caption.appendChild(homeLink);
+  }
+
   const prevYearLink = document.createElement("a");
   prevYearLink.href = `?year=${year - 1}&orientation=${orientation}`;
   prevYearLink.appendChild(document.createTextNode("⏪"));
   caption.appendChild(prevYearLink);
+
   caption.appendChild(document.createTextNode(" "));
   caption.appendChild(document.createTextNode(year));
   caption.appendChild(document.createTextNode(" "));
+
   const nextYearLink = document.createElement("a");
   nextYearLink.href = `?year=${year + 1}&orientation=${orientation}`;
   nextYearLink.appendChild(document.createTextNode("⏩"));
   caption.appendChild(nextYearLink);
-  caption.appendChild(document.createTextNode(" "));
+
   const orientationLink = document.createElement("a");
   orientationLink.href = `?year=${year}&orientation=${orientation === "portrait" ? "landscape" : "portrait"}`;
   orientationLink.appendChild(document.createTextNode(orientation === "portrait" ? "🔁" : "🔃"));
   orientationLink.title = orientation === "portrait" ? "Switch to landscape orientation" : "Switch to portrait orientation";
   caption.appendChild(orientationLink);
+
   caption.classList.add("year");
   table.appendChild(caption);
 }
