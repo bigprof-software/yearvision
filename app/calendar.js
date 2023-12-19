@@ -23,15 +23,16 @@ function showCalendar(year, orientation) {
   if(!year) year = new Date().getFullYear();
 
   switch(orientation) {
-    case "landscape":
-      showCalendarLandscape(year);
-      break;
-    default: /* portrait */
+    case "portrait":
       showCalendarPortrait(year);
+      break;
+    default: /* landscape */
+      showCalendarLandscape(year);
   }
 }
 
-function showCalendarLandscape(year) {
+// each column is a month
+function showCalendarPortrait(year) {
   // Array of month names
   const months = [
     "JAN", "FEB", "MAR", "APR", "MAY", "JUN",
@@ -114,7 +115,8 @@ function showCalendarLandscape(year) {
   document.title = `${year} Year Planner`
 }
 
-function showCalendarPortrait(year) {
+// each row is a month
+function showCalendarLandscape(year) {
   // Array of month names
   const months = [
     "JAN", "FEB", "MAR", "APR", "MAY", "JUN",
@@ -128,7 +130,7 @@ function showCalendarPortrait(year) {
   const table = document.createElement("table");
 
   // add year as table caption
-  appendElement(table, "caption", year);
+  appendElement(table, "caption", year).classList.add("year");
 
   // week day of first day of the year
   const firstWeekDay = new Date(year, 0, 1).getDay();
