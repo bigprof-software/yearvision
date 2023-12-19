@@ -18,8 +18,20 @@ function getWeekendDays(locale = undefined) {
   }
 }
 
+function showCalendar(year, orientation) {
+  // if no year is given, use the current year
+  if(!year) year = new Date().getFullYear();
 
-function showCalendar(year) {
+  switch(orientation) {
+    case "landscape":
+      showCalendarLandscape(year);
+      break;
+    default: /* portrait */
+      showCalendarPortrait(year);
+  }
+}
+
+function showCalendarLandscape(year) {
   // Array of month names
   const months = [
     "JAN", "FEB", "MAR", "APR", "MAY", "JUN",
@@ -100,4 +112,92 @@ function showCalendar(year) {
 
   // Set page title to the year
   document.title = `${year} Year Planner`
+}
+
+function showCalendarPortrait(year) {
+  // Array of month names
+  const months = [
+    "JAN", "FEB", "MAR", "APR", "MAY", "JUN",
+    "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"
+  ];
+
+  // determine weekend days based on user locale
+  const weekendDays = getWeekendDays();
+
+  // Create a new table element
+  const table = document.createElement("table");
+
+  // add year as table caption
+  appendElement(table, "caption", year);
+
+  // week day of first day of the year
+  const firstWeekDay = new Date(year, 0, 1).getDay();
+
+  // Loop through each month, creating a new row for each
+  months.forEach((month) => {
+    // Create a new row for each month
+    const monthRow = document.createElement("tr");
+
+    // Create a new header cell for the month name
+    appendElement(monthRow, "th", month);
+
+    // Calculate the number of days in the current month
+    const monthIndex = months.indexOf(month);
+    const numDays = new Date(year, monthIndex + 1, 0).getDate();
+
+    // first week day of the month
+    const firstDayWeekDay = new Date(year, monthIndex, 1).getDay();
+
+    // Create empty cells for the days before the first day of the month
+    for (let day = firstWeekDay; day < firstDayWeekDay; day++) {
+      const emptyCell = appendElement(monthRow, "td", "");
+
+      // if the current day is a weekend (based on user locale), add the weekend class
+      if(weekendDays.includes(day)) {
+        emptyCell.classList.add("weekend");
+      }
+    }
+
+    // Loop through each day
+    for (let day = 1; day <= numDays; day++) {
+      // Create a new cell for each day
+      const dayCell = document.createElement("td");
+
+      // Create a new line element for the day number, with class .day-number
+      appendElement(dayCell, "div", day).classList.add("day-number");
+
+      // Create a new line element for the week day, with class .week-day
+      const weekDayText = new Date(year, monthIndex, day).toLocaleString("en-US", { weekday: "short" }).toUpperCase().slice(0, 2);
+      appendElement(dayCell, "div", weekDayText).classList.add("week-day");
+
+      // Create a new empty line element for the event list
+      appendElement(dayCell, "div", "").classList.add("event-list");
+
+      // if the current day is a weekend (based on user locale), add the weekend class
+      if(weekendDays.includes(new Date(year, monthIndex, day).getDay())) {
+        dayCell.classList.add("weekend");
+      }
+
+      // Append the day cell to the month row
+      monthRow.appendChild(dayCell);
+    }
+
+    // Append the month row to the table
+    table.appendChild(monthRow);
+  });
+
+  // Append the table to the #calendar element
+  document.getElementById("calendar").appendChild(table);
+
+  // Set page title to the year
+  document.title = `${year} Year Planner`
+}
+
+// function to create an element of specified tag name with specified text, and append it to the specified parent element
+function appendElement(parent, tagName, text) {
+  const element = document.createElement(tagName);
+  element.appendChild(document.createTextNode(text));
+  parent.appendChild(element);
+
+  return element;
 }
