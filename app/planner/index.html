@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Printable Year Planner</title>
+	<script src="calendar.js"></script>
+	<style>
+		#calendar table {
+			border-collapse: collapse;
+			width: 100%;
+		}
+		#calendar td {
+			border: 2px solid #ddd;
+			padding: 5px;
+			font-family: Arial, Helvetica, sans-serif;
+			font-size: 0.8em;
+			color: #666;
+		}
+		#calendar th {
+			text-align: center;
+			padding: 5px;
+			font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+			font-weight: 300;
+			font-size: 1.2em;
+			color: #999;
+		}
+		#calendar .year {
+			font-size: 2em;
+			font-weight: 600;
+			font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+			color: #999;
+			text-align: right;
+			margin: 1em 0;
+			/* character spacing wide */
+			letter-spacing: 0.3em;
+		}
+		#calendar .year a {
+			color: #999;
+			text-decoration: none;
+		}
+		/* don't print .year a */
+		@media print {
+			#calendar .year a {
+				display: none;
+			}
+		}
+		#calendar td.weekend {
+			background-color: #eee;
+		}
+		#calendar td.weekday {
+			background-color: #fff;
+		}
+		#calendar td:not(.weekend):not(.weekday) {
+			background-color: #f9f9f9;
+		}
+		#calendar .day-number {
+			font-size: 1.2em;
+			font-weight: 600;
+			color: #666;
+		}
+		#calendar .event-list {
+			height: 2em;
+		}
+	</style>
+</head>
+<body>
+	<div id="calendar"></div>
+	<script>
+		let year = null;
+		let orientation = null;
+
+		// if year provided in url, use that
+		if (window.location.search) {
+			let urlParams = new URLSearchParams(window.location.search);
+			if (urlParams.has('year')) year = urlParams.get('year');
+		}
+
+		// if orientation provided in url, use that
+		if (window.location.search) {
+			let urlParams = new URLSearchParams(window.location.search);
+			if (urlParams.has('orientation')) orientation = urlParams.get('orientation');
+		}
+
+		// create calendar
+		showCalendar(year, orientation);
+	</script>
+</body>
+</html>
